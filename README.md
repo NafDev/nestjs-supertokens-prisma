@@ -24,3 +24,4 @@ An API project template built using NestJS, Prisma, and SuperTokens.
 - [x] ST email verification logic
 - [ ] SMTP service
 - [ ] RBAC authorization
+- [ ] App logging 
