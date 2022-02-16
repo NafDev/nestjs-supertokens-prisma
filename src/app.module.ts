@@ -6,6 +6,7 @@ import { AppConfigModule } from './config/config.module';
 import { validate } from './config/config.service';
 import { DatabaseModule } from './db/db.module';
 import { PrismaService } from './db/prisma/prisma.service';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { PrismaService } from './db/prisma/prisma.service';
     }),
     DatabaseModule,
     UserModule,
+    EmailModule,
   ],
   controllers: [],
   providers: [PrismaService],

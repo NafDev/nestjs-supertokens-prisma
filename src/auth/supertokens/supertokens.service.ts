@@ -11,7 +11,7 @@ export class SupertokensService {
       appInfo: config.appInfo,
       supertokens: { connectionURI: config.connectionURI },
       recipeList: [
-        STSessionHandler.init({ antiCsrf: 'VIA_TOKEN', cookieSameSite: 'strict' }),
+        STSessionHandler.init({ antiCsrf: 'VIA_CUSTOM_HEADER', cookieSameSite: 'strict' }),
         STEmailVerificationHandler.init({
           getEmailForUserId: async (userId) =>
             (await prisma.user.findFirst({ where: { uid: userId }, select: { email: true } })).email,

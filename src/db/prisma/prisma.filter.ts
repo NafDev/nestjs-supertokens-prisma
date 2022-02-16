@@ -18,6 +18,7 @@ export class PrismaFilter implements ExceptionFilter {
         break;
       case 'P2002' || 'P2003' || 'P2004':
         response.status(HttpStatus.CONFLICT);
+        break;
       default:
         console.error(exception);
         throw new InternalServerErrorException();
