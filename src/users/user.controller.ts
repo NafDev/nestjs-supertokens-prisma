@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Session, UseGuards } from '@nestjs/common';
-import { STSession } from 'src/auth/supertokens/supertokens.types';
-import { AuthGuard } from '../../auth/auth.guard';
-import { CreateUserDto } from './user.dto';
+import { AuthGuard } from '../auth/auth.guard';
+import { STSession } from '../auth/supertokens/supertokens.types';
+import { CreateUserDto, EmailDto } from './user.dto';
 import { UserService } from './user.service';
 
 @Controller('users')
@@ -17,6 +17,11 @@ export class UserController {
   @Post('create')
   createUser(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
+  }
+
+  @Post('verify')
+  sendVerificationEmail(@Body() email: EmailDto) {
+    return this.userService.sendVerificationEmail(email);
   }
 
   @Post('verify/:token')

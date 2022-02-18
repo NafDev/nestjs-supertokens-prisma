@@ -1,10 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { hash } from 'bcrypt';
-import { STEmailVerificationHandler } from '../../auth/supertokens/supertokens.types';
-import { AppConfig } from '../../config/config.service';
-import { PrismaService } from '../../db/prisma/prisma.service';
-import { EmailTemplates, SmtpService } from '../../email/smtp.service';
-import { nanoDbId } from '../../util/nanoid';
+import { STEmailVerificationHandler } from '../auth/supertokens/supertokens.types';
+import { AppConfig } from '../config/config.service';
+import { PrismaService } from '../db/prisma/prisma.service';
+import { EmailTemplates, SmtpService } from '../email/smtp.service';
+import { nanoDbId } from '../util/nanoid';
 import { CreateUserDto, UserInfoDto } from './user.dto';
 
 @Injectable()
@@ -24,11 +24,23 @@ export class UserService {
       },
     });
 
+    await this.sendVerificationEmail({ uid: user.uid, email: user.email });
+  }
+
+  async sendVerificationEmail(userInfo: Partial<UserInfoDto>) {
+    let user: UserInfoDto;
+    if (userInfo.uid !== undefined && userInfo.email !== undefined) {
+      user = { uid: userInfo.uid, email: userInfo.email };
+    } else {
+      const where = userInfo.uid !== undefined ? { uid: userInfo.uid } : { email: userInfo.email };
+      user = await this.prisma.user.findFirst({ where, select: { email: true, uid: true } });
+    }
+
+    await STEmailVerificationHandler.revokeEmailVerificationTokens(user.uid, user.email);
+
     const verifyToken = await STEmailVerificationHandler.createEmailVerificationToken(user.uid, user.email);
     if (verifyToken.status === 'OK') {
-      // Configure web endpoint as needed, web app will call api/verify/:token
       const verifyLink = this.appConfig.webDomain + `/verify/${verifyToken.token}`;
-
       this.smtpService.sendEmail(user.email, 'Verify your email address', EmailTemplates.VERIFY_USER, { verifyLink });
     }
   }
@@ -36,7 +48,7 @@ export class UserService {
   async verifyUser(token: string) {
     const res = await STEmailVerificationHandler.verifyEmailUsingToken(token);
     if (res.status === 'EMAIL_VERIFICATION_INVALID_TOKEN_ERROR') {
-      throw new UnauthorizedException('Invalid verification token');
+      throw new ForbiddenException('Invalid verification token');
     }
 
     await this.prisma.user.update({ where: { uid: res.user.id }, data: { verified: true } });

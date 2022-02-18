@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { compare } from 'bcrypt';
-import { UserLoginDto } from '../api/users/user.dto';
 import { PrismaService } from '../db/prisma/prisma.service';
+import { UserLoginDto } from '../users/user.dto';
 import { STSession, STSessionHandler } from './supertokens/supertokens.types';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   async logout(session: STSession) {
-    await STSessionHandler.revokeSession(session.getHandle());
+    await session.revokeSession();
     return;
   }
 }
