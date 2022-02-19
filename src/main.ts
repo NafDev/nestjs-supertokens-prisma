@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { getAllCORSHeaders } from 'supertokens-node';
 import { AppModule } from './app.module';
 import { SupertokensExceptionFilter } from './auth/auth.filter';
+import { PrismaExceptionFilter } from './db/prisma/prisma.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,8 @@ async function bootstrap() {
   });
 
   app.useGlobalFilters(new SupertokensExceptionFilter());
+  app.useGlobalFilters(new PrismaExceptionFilter());
+
   app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(configService.get('PORT'));
