@@ -2,6 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { compare } from 'bcrypt';
 import { PrismaService } from '../db/prisma/prisma.service';
 import { UserLoginDto } from '../users/user.dto';
+import { AccessTokenPayload } from './auth.types';
 import { STSession, STSessionHandler } from './supertokens/supertokens.types';
 
 @Injectable()
@@ -11,11 +12,14 @@ export class AuthService {
   async login(userLoginDto: UserLoginDto, res: any) {
     const user = await this.prisma.user.findFirst({
       where: { email: userLoginDto.email.toLowerCase() },
-      select: { uid: true, passwordHash: true },
+      select: { uid: true, passwordHash: true, roles: true },
     });
 
     if (user !== null && (await compare(userLoginDto.password, user.passwordHash))) {
-      await STSessionHandler.createNewSession(res, user.uid);
+      const payload: AccessTokenPayload = {
+        roles: user.roles.map((role) => role.roleId),
+      };
+      await STSessionHandler.createNewSession(res, user.uid, payload);
       return;
     }
 

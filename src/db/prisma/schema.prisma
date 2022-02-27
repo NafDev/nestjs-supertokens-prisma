@@ -8,9 +8,30 @@ generator client {
 }
 
 model User {
-  id           Int     @id @default(autoincrement())
-  uid          String  @unique
-  email        String  @unique
+  id           Int         @id @default(autoincrement())
+  uid          String      @unique
+  email        String      @unique
   passwordHash String
-  verified     Boolean @default(false)
+  verified     Boolean     @default(false)
+  roles        UserRoles[]
+
+  @@map("user")
+}
+
+model Role {
+  id    Int         @id
+  name  String      @unique
+  users UserRoles[]
+
+  @@map("role")
+}
+
+model UserRoles {
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+  role   Role @relation(fields: [roleId], references: [id])
+  roleId Int
+
+  @@id([userId, roleId])
+  @@map("user_roles")
 }

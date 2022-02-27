@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { AppConfigModule } from './config/config.module';
 import { validate } from './config/config.service';
@@ -31,8 +32,8 @@ import { UserModule } from './users/user.module';
     DatabaseModule,
     UserModule,
     EmailModule,
+    AdminModule,
   ],
-  controllers: [],
   providers: [PrismaService],
 })
 export class AppModule {}
