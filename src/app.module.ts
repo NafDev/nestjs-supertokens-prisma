@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerModule } from 'nestjs-pino';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { AppConfigModule } from './config/config.module';
@@ -19,6 +20,16 @@ import { UserModule } from './users/user.module';
       isGlobal: true,
     }),
     AppConfigModule,
+    LoggerModule.forRootAsync({
+      useFactory: () => {
+        return {
+          pinoHttp: {
+            transport: { target: 'pino-pretty' },
+            redact: { paths: ['req.headers.cookie', 'res.headers["set-cookie"]'], remove: true },
+          },
+        };
+      },
+    }),
     AuthModule.forRoot({
       // https://supertokens.com/docs/session/appinfo
       // These variables should by now be validated and initialised in config.service.ts

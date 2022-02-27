@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { compare } from 'bcrypt';
 import { PrismaService } from '../db/prisma/prisma.service';
 import { UserLoginDto } from '../users/user.dto';
@@ -7,6 +7,8 @@ import { STSession, STSessionHandler } from './supertokens/supertokens.types';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   async login(userLoginDto: UserLoginDto, res: any) {

@@ -1,9 +1,11 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { Response } from 'express';
 
 @Catch(PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(PrismaExceptionFilter.name);
+
   catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -17,7 +19,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       case 'P2002' || 'P2003' || 'P2004':
         return response.sendStatus(HttpStatus.CONFLICT);
       default:
-        console.error(exception);
+        this.logger.error('Internal server error', exception.stack);
         return response.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

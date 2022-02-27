@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { compile } from 'handlebars';
 import * as nodemailer from 'nodemailer';
@@ -16,6 +16,8 @@ export interface IEmailVariables {
 
 @Injectable()
 export class SmtpService {
+  private readonly logger = new Logger(SmtpService.name);
+
   private transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
   private templates: Map<string, HandlebarsTemplateDelegate> = new Map();
 
@@ -25,7 +27,8 @@ export class SmtpService {
 
       const mjmlResult = mjml2html(readFileSync(`emails/templates/${templateFile}`).toString());
       if (mjmlResult.errors.length !== 0) {
-        throw new Error(`Could not parse mjml file ${templateFile} -> ${mjmlResult.errors}`);
+        this.logger.error(`Could not parse mjml file ${templateFile} -> ${mjmlResult.errors}`);
+        process.exit(1);
       }
 
       const hbsTemplateFn = compile(mjmlResult.html);
@@ -42,7 +45,6 @@ export class SmtpService {
         user: smtpConn.user,
         pass: smtpConn.pass,
       },
-      logger: true,
     });
   }
 

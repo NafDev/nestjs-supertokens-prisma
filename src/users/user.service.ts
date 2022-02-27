@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { hash } from 'bcrypt';
 import { STEmailVerificationHandler } from '../auth/supertokens/supertokens.types';
 import { AppConfig } from '../config/config.service';
@@ -9,6 +9,8 @@ import { CreateUserDto, UserInfoDto } from './user.dto';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
     private readonly appConfig: AppConfig,
     private readonly prisma: PrismaService,
