@@ -1,12 +1,17 @@
+import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 
 export class UserLoginDto {
-  @IsEmail() email: string;
+  @IsEmail()
+  @Transform((email) => email.value.toLowerCase())
+  email: string;
   @IsNotEmpty() password: string;
 }
 
 export class CreateUserDto {
-  @IsEmail() email: string;
+  @IsEmail()
+  @Transform((email) => email.value.toLowerCase())
+  email: string;
   @MinLength(6) password: string;
 }
 
@@ -16,5 +21,7 @@ export class UserInfoDto {
 }
 
 export class EmailDto {
-  @IsEmail() email: string;
+  @IsEmail()
+  @Transform((email) => email.value.toLowerCase())
+  email: string;
 }
