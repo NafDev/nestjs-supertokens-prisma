@@ -1,9 +1,10 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { compare } from 'bcrypt';
+import { SessionContainer } from 'supertokens-node/recipe/session';
 import { PrismaService } from '../db/prisma/prisma.service';
 import { UserLoginDto } from '../users/user.dto';
 import { AccessTokenPayload } from './auth.types';
-import { STSession, STSessionHandler } from './supertokens/supertokens.types';
+import { STSessionHandler } from './supertokens/supertokens.types';
 
 @Injectable()
 export class AuthService {
@@ -28,7 +29,7 @@ export class AuthService {
     throw new UnauthorizedException('Invalid email or password');
   }
 
-  async logout(session: STSession) {
+  async logout(session: SessionContainer) {
     await session.revokeSession();
     return;
   }

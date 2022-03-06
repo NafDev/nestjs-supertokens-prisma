@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, Session, UseGuards } from '@nestjs/common';
+import { SessionContainer } from 'supertokens-node/recipe/session';
 import { UserLoginDto } from '../users/user.dto';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
@@ -15,7 +15,7 @@ export class AuthController {
 
   @Post('logout')
   @UseGuards(AuthGuard)
-  async logout(@Session() session: STSession) {
+  async logout(@Session() session: SessionContainer) {
     return this.authService.logout(session);
   }
 }

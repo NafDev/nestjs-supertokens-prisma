@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Session, UseGuards } from '@nestjs/common';
+import { SessionContainer } from 'supertokens-node/recipe/session';
 import { AuthGuard } from '../auth/auth.guard';
-import { STSession } from '../auth/supertokens/supertokens.types';
 import { CreateUserDto, EmailDto } from './user.dto';
 import { UserService } from './user.service';
 
@@ -10,7 +10,7 @@ export class UserController {
 
   @Get('me')
   @UseGuards(AuthGuard)
-  getUser(@Session() session: STSession) {
+  getUser(@Session() session: SessionContainer) {
     return this.userService.getUserInfo(session.getUserId());
   }
 

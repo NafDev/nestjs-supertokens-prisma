@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { hash } from 'bcrypt';
-import { STEmailVerificationHandler } from '../auth/supertokens/supertokens.types';
+import { STEmailVerification } from '../auth/supertokens/supertokens.types';
 import { AppConfig } from '../config/config.service';
 import { PrismaService } from '../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../email/smtp.service';
@@ -38,9 +38,9 @@ export class UserService {
       user = await this.prisma.user.findFirst({ where, select: { email: true, uid: true } });
     }
 
-    await STEmailVerificationHandler.revokeEmailVerificationTokens(user.uid, user.email);
+    await STEmailVerification.revokeEmailVerificationTokens(user.uid, user.email);
 
-    const verifyToken = await STEmailVerificationHandler.createEmailVerificationToken(user.uid, user.email);
+    const verifyToken = await STEmailVerification.createEmailVerificationToken(user.uid, user.email);
     if (verifyToken.status === 'OK') {
       const verifyLink = this.appConfig.webDomain + `/verify/${verifyToken.token}`;
       this.smtpService.sendEmail(user.email, 'Verify your email address', EmailTemplates.VERIFY_USER, { verifyLink });
@@ -48,7 +48,7 @@ export class UserService {
   }
 
   async verifyUser(token: string) {
-    const res = await STEmailVerificationHandler.verifyEmailUsingToken(token);
+    const res = await STEmailVerification.verifyEmailUsingToken(token);
     if (res.status === 'EMAIL_VERIFICATION_INVALID_TOKEN_ERROR') {
       throw new ForbiddenException('Invalid verification token');
     }
