@@ -4,7 +4,7 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import { PrismaService } from '../db/prisma/prisma.service';
 import { UserLoginDto } from '../users/user.dto';
 import { AccessTokenPayload } from './auth.types';
-import { STSessionHandler } from './supertokens/supertokens.types';
+import { STSession } from './supertokens/supertokens.types';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +22,7 @@ export class AuthService {
       const payload: AccessTokenPayload = {
         roles: user.roles.map((role) => role.roleId),
       };
-      await STSessionHandler.createNewSession(res, user.uid, payload);
+      await STSession.createNewSession(res, user.uid, payload);
       return;
     }
 
