@@ -1,26 +1,32 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { Response } from 'express';
+import { PrismaError } from '../../types/prisma';
+import { classifyPrismaError } from './prisma.errors';
 
 @Catch(PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(PrismaExceptionFilter.name);
+	private readonly logger = new Logger(PrismaExceptionFilter.name);
 
-  catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
+	catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
+		const ctx = host.switchToHttp();
+		const response = ctx.getResponse<Response>();
 
-    // https://www.prisma.io/docs/reference/api-reference/error-reference#prisma-client-query-engine
-    switch (exception.code) {
-      case 'P2000' || 'P2005' || 'P2006' || 'P2011' || 'P2012' || 'P2013' || 'P2014' || 'P2019':
-        return response.sendStatus(HttpStatus.BAD_REQUEST);
-      case 'P2001' || 'P2015' || 'P2018':
-        return response.sendStatus(HttpStatus.NOT_FOUND);
-      case 'P2002' || 'P2003' || 'P2004':
-        return response.sendStatus(HttpStatus.CONFLICT);
-      default:
-        this.logger.error('Internal server error', exception.stack);
-        return response.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+		const classedError = classifyPrismaError(exception) ?? [undefined];
+
+		switch (classedError[0]) {
+			case PrismaError.INVALID_REQUEST:
+				this.logger.warn('Uncaught Prisma Error - INVALID_REQUEST', exception.stack);
+				return response.status(HttpStatus.BAD_REQUEST).send();
+			case PrismaError.NOT_FOUND:
+				this.logger.warn('Uncaught Prisma Error - NOT_FOUND', exception.stack);
+				return response.status(HttpStatus.NOT_FOUND).send();
+			case PrismaError.CONSTRAINT_FAILED:
+				this.logger.warn('Uncaught Prisma Error - CONSTRAINT_FAILED', exception.stack);
+				return response.status(HttpStatus.CONFLICT).send();
+			default:
+				this.logger.error('Uncaught Prisma Error - INTERNAL_ERROR', exception.stack);
+				return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send();
+		}
+	}
 }

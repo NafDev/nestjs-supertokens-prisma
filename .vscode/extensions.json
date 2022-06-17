@@ -1,0 +1,12 @@
+{
+	"recommendations": [
+		"samverschueren.linter-xo",
+		"mikestead.dotenv",
+		"mjmlio.vscode-mjml",
+		"eg2.vscode-npm-script",
+		"christian-kohler.npm-intellisense",
+		"prisma.prisma",
+		"pkief.material-icon-theme",
+		"oderwat.indent-rainbow"
+	]
+}

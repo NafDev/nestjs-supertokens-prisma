@@ -1,59 +1,65 @@
+import { readFileSync } from 'node:fs';
 import { Injectable, Logger } from '@nestjs/common';
-import { readFileSync } from 'fs';
 import { compile } from 'handlebars';
 import * as nodemailer from 'nodemailer';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { AppConfig } from '../config/config.service';
-import mjml2html = require('mjml');
+import mjml2html from 'mjml';
+import appConfig from '../config/app.config';
 
 export enum EmailTemplates {
-  VERIFY_USER = 'verify-user.mjml',
+	VERIFY_USER = 'verify-user.mjml',
+	WELCOME = 'welcome.mjml'
 }
 
 export interface IEmailVariables {
-  verifyLink?: string;
+	verifyLink?: string;
 }
 
 @Injectable()
 export class SmtpService {
-  private readonly logger = new Logger(SmtpService.name);
+	private readonly logger = new Logger(SmtpService.name);
 
-  private transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
-  private templates: Map<string, HandlebarsTemplateDelegate> = new Map();
+	private readonly transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
+	private readonly templates: Map<EmailTemplates, HandlebarsTemplateDelegate> = new Map();
 
-  constructor(private readonly appConfig: AppConfig) {
-    for (const template in EmailTemplates) {
-      const templateFile = EmailTemplates[template];
+	constructor() {
+		for (const templateFile of Object.values(EmailTemplates)) {
+			const mjmlResult = mjml2html(readFileSync(`emails/templates/${templateFile}`).toString());
 
-      const mjmlResult = mjml2html(readFileSync(`emails/templates/${templateFile}`).toString());
-      if (mjmlResult.errors.length !== 0) {
-        this.logger.error(`Could not parse mjml file ${templateFile} -> ${mjmlResult.errors}`);
-        process.exit(1);
-      }
+			if (mjmlResult.errors.length > 0) {
+				throw new Error(
+					`Could not parse mjml file ${templateFile} -> ${JSON.stringify(mjmlResult.errors, undefined, 2)}`
+				);
+			}
 
-      const hbsTemplateFn = compile(mjmlResult.html);
-      this.templates.set(templateFile, hbsTemplateFn);
-    }
+			const hbsTemplateFn = compile(mjmlResult.html);
+			this.templates.set(templateFile, hbsTemplateFn);
+		}
 
-    const smtpConn = appConfig.smtpConnection;
+		this.transporter = nodemailer.createTransport({
+			host: appConfig.SMTP_HOST,
+			port: appConfig.SMTP_PORT,
+			secure: true,
+			auth: {
+				user: appConfig.SMTP_USER,
+				pass: appConfig.SMTP_PASS
+			}
+		});
+	}
 
-    this.transporter = nodemailer.createTransport({
-      host: smtpConn.host,
-      port: smtpConn.port,
-      secure: true,
-      auth: {
-        user: smtpConn.user,
-        pass: smtpConn.pass,
-      },
-    });
-  }
+	async sendEmail(recipient: string, subject: string, template: EmailTemplates, variables?: IEmailVariables) {
+		const hbsTemplate = this.templates.get(template);
 
-  sendEmail(recipient: string, subject: string, template: EmailTemplates, variables?: IEmailVariables) {
-    return this.transporter.sendMail({
-      from: `${this.appConfig.appName ? `"${this.appConfig.appName}"` : ''} <${this.appConfig.sendFromEmail}>`,
-      to: recipient,
-      subject,
-      html: this.templates.get(template)({ ...variables, appName: this.appConfig.appName }),
-    });
-  }
+		if (!hbsTemplate) {
+			this.logger.error(`Invalid template string: ${template}`);
+			return;
+		}
+
+		return this.transporter.sendMail({
+			from: `${appConfig.APP_NAME} <${appConfig.SMTP_SENDFROM}>`,
+			to: recipient,
+			subject,
+			html: hbsTemplate({ ...variables, appName: appConfig.APP_NAME })
+		});
+	}
 }

@@ -8,8 +8,8 @@ import { Role } from '../../users/user.types';
 @Roles(Role.ADMIN)
 @Controller('admin/users')
 export class UsersController {
-  @Get('test')
-  testAdminRoute() {
-    return 'Hello';
-  }
+	@Get('test')
+	testAdminRoute() {
+		return 'Hello';
+	}
 }
