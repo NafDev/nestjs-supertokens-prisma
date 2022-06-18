@@ -36,3 +36,6 @@ lerna-debug.log*
 
 *.env
 !*.sample.env
+
+# Prisma
+**/migrations/migration_lock.toml

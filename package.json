@@ -13,6 +13,9 @@
 	"engines": {
 		"node": "^17.9"
 	},
+	"prisma": {
+		"schema": "src/db/prisma/schema.prisma"
+	},
 	"dependencies": {
 		"@nestjs/common": "^8.4.6",
 		"@nestjs/core": "^8.4.6",
@@ -51,8 +54,5 @@
 		"tsconfig-paths": "^4.0.0",
 		"typescript": "^4.7.3",
 		"xo": "^0.50.0"
-	},
-	"prisma": {
-		"schema": "src/db/prisma/schema.prisma"
 	}
 }
