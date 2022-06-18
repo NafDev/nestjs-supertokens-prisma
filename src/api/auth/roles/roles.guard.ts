@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { Role } from '../../users/user.types';
+import { Role } from '../../users/users.types';
 import { AccessTokenPayload } from '../auth.types';
 import { ROLES_KEY } from './roles.decorator';
 

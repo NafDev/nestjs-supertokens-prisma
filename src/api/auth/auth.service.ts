@@ -2,8 +2,8 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { compare } from 'bcrypt';
 import { Response } from 'express';
 import { SessionContainer } from 'supertokens-node/recipe/session';
-import { PrismaService } from '../db/prisma/prisma.service';
-import { UserLoginDto } from '../users/user.dto';
+import { PrismaService } from '../../db/prisma/prisma.service';
+import { UserLoginDto } from '../users/users.dto';
 import { AccessTokenPayload } from './auth.types';
 import { STSession } from './supertokens/supertokens.types';
 
@@ -14,16 +14,15 @@ export class AuthService {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async login(userLoginDto: UserLoginDto, resp: Response) {
-		const user = await this.prisma.user.findFirst({
+		const user = await this.prisma.user.findUnique({
 			where: { email: userLoginDto.email.toLowerCase() },
-			select: { uid: true, passwordHash: true, roles: true }
+			select: { id: true, passwordHash: true, roles: true }
 		});
 
 		if (user !== null && (await compare(userLoginDto.password, user.passwordHash))) {
-			const payload: AccessTokenPayload = {
-				roles: user.roles.map((role) => role.roleId)
-			};
-			await STSession.createNewSession(resp, user.uid, payload);
+			const payload: AccessTokenPayload = { roles: user.roles };
+
+			await STSession.createNewSession(resp, user.id, payload);
 			return;
 		}
 

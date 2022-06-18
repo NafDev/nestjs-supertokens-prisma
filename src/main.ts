@@ -3,7 +3,7 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { getAllCORSHeaders } from 'supertokens-node';
 import { AppModule } from './app.module';
-import { SupertokensExceptionFilter } from './auth/auth.filter';
+import { SupertokensExceptionFilter } from './api/auth/auth.filter';
 import { AllExceptionsFilter } from './common/exception.filter';
 import appConfig from './config/app.config';
 import { PrismaExceptionFilter } from './db/prisma/prisma.filter';

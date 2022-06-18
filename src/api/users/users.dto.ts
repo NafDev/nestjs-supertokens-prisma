@@ -18,7 +18,7 @@ export class CreateUserDto {
 }
 
 export class UserInfoDto {
-	uid!: string;
+	id!: string;
 	email!: string;
 }
 

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
-import { AdminModule } from './admin/admin.module';
-import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './api/admin/admin.module';
+import { AuthModule } from './api/auth/auth.module';
 import appConfig from './config/app.config';
 import { DatabaseModule } from './db/db.module';
 import { PrismaService } from './db/prisma/prisma.service';
 import { EmailModule } from './email/email.module';
-import { UserModule } from './users/user.module';
+import { UserModule } from './api/users/users.module';
 
 @Module({
 	imports: [

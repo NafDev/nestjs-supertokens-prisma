@@ -7,8 +7,7 @@ import mjml2html from 'mjml';
 import appConfig from '../config/app.config';
 
 export enum EmailTemplates {
-	VERIFY_USER = 'verify-user.mjml',
-	WELCOME = 'welcome.mjml'
+	VERIFY_USER = 'verify-user.mjml'
 }
 
 export interface IEmailVariables {
@@ -36,15 +35,18 @@ export class SmtpService {
 			this.templates.set(templateFile, hbsTemplateFn);
 		}
 
-		this.transporter = nodemailer.createTransport({
-			host: appConfig.SMTP_HOST,
-			port: appConfig.SMTP_PORT,
-			secure: true,
-			auth: {
-				user: appConfig.SMTP_USER,
-				pass: appConfig.SMTP_PASS
-			}
-		});
+		this.transporter = nodemailer.createTransport(
+			{
+				host: appConfig.SMTP_HOST,
+				port: appConfig.SMTP_PORT,
+				secure: true,
+				auth: {
+					user: appConfig.SMTP_USER,
+					pass: appConfig.SMTP_PASS
+				}
+			},
+			{ debug: true }
+		);
 	}
 
 	async sendEmail(recipient: string, subject: string, template: EmailTemplates, variables?: IEmailVariables) {
@@ -55,11 +57,20 @@ export class SmtpService {
 			return;
 		}
 
-		return this.transporter.sendMail({
-			from: `${appConfig.APP_NAME} <${appConfig.SMTP_SENDFROM}>`,
-			to: recipient,
-			subject,
-			html: hbsTemplate({ ...variables, appName: appConfig.APP_NAME })
-		});
+		try {
+			const result = await this.transporter.sendMail({
+				from: `${appConfig.APP_NAME} <${appConfig.SMTP_SENDFROM}>`,
+				to: recipient,
+				subject,
+				html: hbsTemplate({ ...variables, appName: appConfig.APP_NAME })
+			});
+			this.logger.log(`Email sent - message ID ${result.messageId}`);
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				this.logger.error('Error sending email', error.stack ?? error);
+			}
+
+			throw error;
+		}
 	}
 }

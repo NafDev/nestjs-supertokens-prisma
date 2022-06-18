@@ -20,7 +20,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
 		const httpStatus = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-		const responseBody = exception instanceof HttpException ? { message: exception.message } : null;
+		const responseBody = exception instanceof HttpException ? { message: exception.message } : undefined;
 
 		httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
 	}

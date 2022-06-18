@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../../auth/auth.guard';
 import { Roles } from '../../auth/roles/roles.decorator';
 import { RolesGuard } from '../../auth/roles/roles.guard';
-import { Role } from '../../users/user.types';
+import { Role } from '../../users/users.types';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(Role.ADMIN)
