@@ -8,11 +8,13 @@ generator client {
 }
 
 model User {
-  id           String  @id @default(uuid()) @db.Uuid
-  email        String  @unique
-  passwordHash String
-  verified     Boolean @default(false)
-  roles        Role[]
+  id                 String   @id @default(uuid()) @db.Uuid
+  email              String   @unique
+  passwordHash       String?
+  passwordResetToken String?  @unique
+  verified           Boolean  @default(false)
+  roles              Role[]
+  createdAt          DateTime @default(now())
 
   @@map("user")
 }

@@ -7,11 +7,12 @@ import mjml2html from 'mjml';
 import appConfig from '../config/app.config';
 
 export enum EmailTemplates {
-	VERIFY_USER = 'verify-user.mjml'
+	VERIFY_USER = 'verify-user.mjml',
+	RESET_PASSWORD = 'reset-password.mjml'
 }
 
 export interface IEmailVariables {
-	verifyLink?: string;
+	link?: string;
 }
 
 @Injectable()
@@ -27,7 +28,7 @@ export class SmtpService {
 
 			if (mjmlResult.errors.length > 0) {
 				throw new Error(
-					`Could not parse mjml file ${templateFile} -> ${JSON.stringify(mjmlResult.errors, undefined, 2)}`
+					`Could not parse mjml file "${templateFile}": ${JSON.stringify(mjmlResult.errors, undefined, 2)}`
 				);
 			}
 
@@ -39,13 +40,13 @@ export class SmtpService {
 			{
 				host: appConfig.SMTP_HOST,
 				port: appConfig.SMTP_PORT,
-				secure: true,
+				// Secure: true,
 				auth: {
 					user: appConfig.SMTP_USER,
 					pass: appConfig.SMTP_PASS
 				}
 			},
-			{ debug: true }
+			{ debug: appConfig.isDev }
 		);
 	}
 

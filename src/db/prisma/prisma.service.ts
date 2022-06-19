@@ -1,11 +1,12 @@
 import { INestApplication, Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import appConfig from '../../config/app.config';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
 	constructor() {
 		super({
-			log: ['query']
+			log: appConfig.isDev ? ['query'] : undefined
 		});
 	}
 

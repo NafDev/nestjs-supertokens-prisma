@@ -11,6 +11,7 @@ specifiers:
   '@tsconfig/node17': ^1.0.1
   '@types/bcrypt': ^5.0.0
   '@types/express': ^4.17.13
+  '@types/helmet': ^4.0.0
   '@types/mjml': ^4.7.0
   '@types/node': ^17.0.42
   '@types/nodemailer': ^6.4.4
@@ -21,9 +22,10 @@ specifiers:
   dotenv: ^16.0.1
   envalid: ^7.3.1
   handlebars: ^4.7.7
+  helmet: ^5.1.0
   mjml: ^4.12.0
-  nanoid: ^4.0.0
-  nestjs-pino: ^2.5.0
+  nanoid: 3.3.4
+  nestjs-pino: ^2.6.0
   nodemailer: ^6.7.5
   nodemon: ^2.0.15
   pino-http: ^8.0.1
@@ -50,8 +52,9 @@ dependencies:
   dotenv: 16.0.1
   envalid: 7.3.1
   handlebars: 4.7.7
+  helmet: 5.1.0
   mjml: 4.12.0
-  nanoid: 4.0.0
+  nanoid: 3.3.4
   nestjs-pino: 2.6.0_jfh7h7va764rcwbd3xewnrarui
   nodemailer: 6.7.5
   pino-http: 8.0.1
@@ -66,6 +69,7 @@ devDependencies:
   '@tsconfig/node17': 1.0.1
   '@types/bcrypt': 5.0.0
   '@types/express': 4.17.13
+  '@types/helmet': 4.0.0
   '@types/mjml': 4.7.0
   '@types/node': 17.0.45
   '@types/nodemailer': 6.4.4
@@ -593,6 +597,13 @@ packages:
       '@types/express-serve-static-core': 4.17.29
       '@types/qs': 6.9.7
       '@types/serve-static': 1.13.10
+
+  /@types/helmet/4.0.0:
+    resolution: {integrity: sha512-ONIn/nSNQA57yRge3oaMQESef/6QhoeX7llWeDli0UZIfz8TQMkfNPTXA8VnnyeA1WUjG2pGqdjEIueYonMdfQ==}
+    deprecated: This is a stub types definition. helmet provides its own type definitions, so you do not need this installed.
+    dependencies:
+      helmet: 5.1.0
+    dev: true
 
   /@types/json-schema/7.0.11:
     resolution: {integrity: sha512-wOuvG1SN4Us4rez+tylwwwCV1psiNVOkJeM3AUWUNWg/jDQY2+HE/444y5gc+jBmRqASOm2Oeh5c1axHobwRKQ==}
@@ -2952,7 +2963,7 @@ packages:
       source-map: 0.6.1
       wordwrap: 1.0.0
     optionalDependencies:
-      uglify-js: 3.16.0
+      uglify-js: 3.16.1
     dev: false
 
   /hard-rejection/2.1.0:
@@ -3010,6 +3021,10 @@ packages:
     hasBin: true
     dev: false
 
+  /helmet/5.1.0:
+    resolution: {integrity: sha512-klsunXs8rgNSZoaUrNeuCiWUxyc+wzucnEnFejUg3/A+CaF589k9qepLZZ1Jehnzig7YbD4hEuscGXuBY3fq+g==}
+    engines: {node: '>=12.0.0'}
+
   /hosted-git-info/2.8.9:
     resolution: {integrity: sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==}
     dev: true
@@ -3032,7 +3047,7 @@ packages:
       he: 1.2.0
       param-case: 2.1.1
       relateurl: 0.2.7
-      uglify-js: 3.16.0
+      uglify-js: 3.16.1
     dev: false
 
   /htmlparser2/4.1.0:
@@ -4394,9 +4409,9 @@ packages:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
     dev: true
 
-  /nanoid/4.0.0:
-    resolution: {integrity: sha512-IgBP8piMxe/gf73RTQx7hmnhwz0aaEXYakvqZyE302IXW3HyVNhdNGC+O2MwMAVhLEnvXlvKtGbtJf6wvHihCg==}
-    engines: {node: ^14 || ^16 || >=18}
+  /nanoid/3.3.4:
+    resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
     dev: false
 
@@ -5906,8 +5921,8 @@ packages:
     hasBin: true
     dev: true
 
-  /uglify-js/3.16.0:
-    resolution: {integrity: sha512-FEikl6bR30n0T3amyBh3LoiBdqHRy/f4H80+My34HOesOKyHfOsxAPAxOoqC0JUnC1amnO0IwkYC3sko51caSw==}
+  /uglify-js/3.16.1:
+    resolution: {integrity: sha512-X5BGTIDH8U6IQ1TIRP62YC36k+ULAa1d59BxlWvPUJ1NkW5L3FwcGfEzuVvGmhJFBu0YJ5Ge25tmRISqCmLiRQ==}
     engines: {node: '>=0.8.0'}
     hasBin: true
     dev: false

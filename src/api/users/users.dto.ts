@@ -27,3 +27,8 @@ export class EmailDto {
 	@Transform((email) => email.value.toLowerCase())
 	email!: string;
 }
+
+export class PasswordDto {
+	@MinLength(6) password!: string;
+	token!: string;
+}

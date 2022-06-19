@@ -1,7 +1,6 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import process from 'node:process';
 import { cleanEnv, num, port, str, url } from 'envalid';
-
-/* eslint-disable @typescript-eslint/naming-convention */
 
 export default cleanEnv(process.env, {
 	NODE_ENV: str({ devDefault: 'development', choices: ['development', 'production'] }),
@@ -22,10 +21,8 @@ export default cleanEnv(process.env, {
 	WEB_DOMAIN: url({ example: 'localhost:8080' }),
 
 	SMTP_HOST: str({ example: 'email-smtp.eu-west-2.amazonaws.com' }),
-	SMTP_PORT: port({ choices: [25, 587, 2587, 465, 2465] }),
+	SMTP_PORT: port({ choices: [25, 587, 2587, 465, 2465, 2525] }),
 	SMTP_USER: str(),
 	SMTP_PASS: str({}),
 	SMTP_SENDFROM: str({ desc: 'The email address of the sender (your app)' })
 });
-
-/* eslint-enable @typescript-eslint/naming-convention */

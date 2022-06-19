@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { getAllCORSHeaders } from 'supertokens-node';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { SupertokensExceptionFilter } from './api/auth/auth.filter';
 import { AllExceptionsFilter } from './common/exception.filter';
@@ -15,6 +16,7 @@ async function bootstrap() {
 	app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
 	app.getHttpAdapter().getInstance().set('etag', false);
+	app.use(helmet());
 	app.enableCors({
 		origin: [appConfig.WEB_DOMAIN],
 		allowedHeaders: ['content-type', ...getAllCORSHeaders()],

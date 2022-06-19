@@ -11,9 +11,9 @@ import { SupertokensService } from './supertokens/supertokens.service';
 	controllers: [AuthController]
 })
 export class AuthModule implements NestModule {
-	static forRoot({ connectionURI, apiKey, appInfo }: AuthModuleConfig): DynamicModule {
+	static forRoot({ connectionURI, apiKey, appInfo, apiBasePath }: AuthModuleConfig): DynamicModule {
 		return {
-			providers: [{ useValue: { appInfo, connectionURI, apiKey }, provide: ConfigInjectionToken }],
+			providers: [{ useValue: { appInfo, connectionURI, apiKey, apiBasePath }, provide: ConfigInjectionToken }],
 			exports: [],
 			imports: [],
 			module: AuthModule

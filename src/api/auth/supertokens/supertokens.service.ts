@@ -33,7 +33,7 @@ export class SupertokensService {
 					async createAndSendCustomEmail(user, emailVerificationURLWithToken) {
 						if (!(await STEmailVerification.isEmailVerified(user.id, user.email))) {
 							await smtpService.sendEmail(user.email, 'Verify your email address', EmailTemplates.VERIFY_USER, {
-								verifyLink: emailVerificationURLWithToken
+								link: emailVerificationURLWithToken
 							});
 						}
 					},
@@ -50,6 +50,14 @@ export class SupertokensService {
 
 									return user?.verified ?? false;
 								},
+								async unverifyEmail(input) {
+									await prisma.user.update({
+										where: { id: input.userId },
+										data: { verified: false },
+										select: {}
+									});
+									return { status: 'OK' };
+								},
 								async verifyEmailUsingToken(input) {
 									try {
 										const cdi = axios.create({
@@ -57,7 +65,7 @@ export class SupertokensService {
 											method: 'POST',
 											headers: {
 												rid: 'emailverification',
-												'cdi-version': appConfig.ST_CDI_VERSION
+												'cdi-version': appConfig.ST_CDI_VERSION // eslint-disable-line @typescript-eslint/naming-convention
 											}
 										});
 
