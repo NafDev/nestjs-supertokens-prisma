@@ -14,7 +14,6 @@ export default cleanEnv(process.env, {
 		devDefault: 'http://127.0.0.1:3567/',
 		desc: 'The API domain for the SuperTokens Core service'
 	}),
-	ST_CDI_VERSION: num({ docs: 'https://supertokens.com/docs/community/apis#see-open-api-spec-here' }),
 
 	APP_NAME: str({ default: 'My App', desc: 'The name of your app or service' }),
 	API_DOMAIN: url({ devDefault: `localhost:3000` }),
