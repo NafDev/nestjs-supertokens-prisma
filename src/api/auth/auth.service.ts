@@ -5,9 +5,8 @@ import { SessionContainer } from 'supertokens-node/recipe/session';
 import appConfig from '../../config/app.config';
 import { PrismaService } from '../../db/prisma/prisma.service';
 import { EmailTemplates, SmtpService } from '../../email/smtp.service';
-import { createToken } from '../../util/nanoid';
+import { createToken, sha265hex } from '../../util/utility';
 import { UserLoginDto } from '../users/users.dto';
-import { sha265hex } from '../../util/utility';
 import { AccessTokenPayload } from './auth.types';
 import { STSession } from './supertokens/supertokens.types';
 
