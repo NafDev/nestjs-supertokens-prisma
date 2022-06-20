@@ -29,17 +29,23 @@ export class SupertokensService {
 					},
 
 					async createAndSendCustomEmail(user, emailVerificationURLWithToken) {
-						if (!(await STEmailVerification.isEmailVerified(user.id, user.email))) {
-							await smtpService.sendEmail(user.email, 'Verify your email address', EmailTemplates.VERIFY_USER, {
-								link: emailVerificationURLWithToken
-							});
-						}
+						await smtpService.sendEmail(user.email, 'Verify your email address', EmailTemplates.VERIFY_USER, {
+							link: emailVerificationURLWithToken
+						});
 					},
 
 					override: {
 						functions(originalImpl) {
 							return {
 								...originalImpl,
+								async createEmailVerificationToken(input) {
+									if (await STEmailVerification.isEmailVerified(input.userId, input.email, {})) {
+										return { status: 'EMAIL_ALREADY_VERIFIED_ERROR' };
+									}
+
+									return originalImpl.createEmailVerificationToken(input);
+								},
+
 								async isEmailVerified(input) {
 									const user = await prisma.user.findUnique({
 										where: { id: input.userId },
@@ -48,6 +54,7 @@ export class SupertokensService {
 
 									return user?.verified ?? false;
 								},
+
 								async unverifyEmail(input) {
 									if (input.userContext.isVerifyingEmail === true) {
 										return originalImpl.unverifyEmail(input);
@@ -60,6 +67,7 @@ export class SupertokensService {
 									});
 									return { status: 'OK' };
 								},
+
 								async verifyEmailUsingToken(input) {
 									// Verify an email
 									const STResponse = await originalImpl.verifyEmailUsingToken(input);
@@ -73,9 +81,8 @@ export class SupertokensService {
 									// Set user enabled in our DB
 									await prisma.user.update({ where: { id }, data: { verified: true } });
 
-									// Remove all tokens from ST
-									await originalImpl.revokeEmailVerificationTokens({ userId: id, email, userContext: {} });
-									await originalImpl.unverifyEmail({ userId: id, email, userContext: { isVerifyingEmail: true } });
+									// Remove user from ST DB
+									await STEmailVerification.unverifyEmail(id, email, { isVerifyingEmail: true });
 
 									return { status: 'OK', user: { id, email } };
 								}
